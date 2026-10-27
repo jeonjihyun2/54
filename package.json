@@ -1,0 +1,9 @@
+{
+  "name": "form54-translate-proxy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FreeModel translate proxy for Form 54 (CORS-enabled)",
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,111 @@
+========================================
+传到 GitHub 再同步到 Vercel · 照着做
+========================================
+
+文件夹里这 5 个东西，要一起传：
+
+    api/translate.js    翻译接口
+    api/health.js       健康检查
+    lib/prompt.js       翻译规则 + Key
+    package.json
+    vercel.json         把超时放宽到 60 秒（别删）
+
+⚠️ 最关键的一点
+----------------------------------------
+api 和 lib 这两个**文件夹**必须待在仓库**最外层**。
+
+传完以后，GitHub 上应该长这样：
+
+    你的仓库/
+      api/
+        translate.js
+        health.js
+      lib/
+        prompt.js
+      package.json
+      vercel.json
+
+如果你传成了 仓库/Form54_Vercel/api/... 这样多套了一层，
+Vercel 会找不到接口，部署完访问会 404。
+这就是 90% 的人第一次会踩的坑。
+
+
+========================================
+第一步：建仓库
+========================================
+
+1. github.com → 右上角 + → New repository
+2. Repository name：form54-translate
+3. 选 **Private**（重要，原因见下）
+4. 不要勾 Add a README
+5. Create repository
+
+
+========================================
+第二步：传文件
+========================================
+
+新仓库页面会有一个「uploading an existing file」链接，点它。
+
+然后打开 Downloads/Form54_GitHub 文件夹，
+把里面的 **api 文件夹、lib 文件夹、package.json、vercel.json**
+一起拖进浏览器上传框。
+
+（是拖 api 和 lib 这两个文件夹本身，
+ 不是拖 Form54_GitHub 这个外层文件夹）
+
+下面 Commit changes 点一下。
+
+
+========================================
+第三步：接到 Vercel
+========================================
+
+1. vercel.com → Add New → Project
+2. 找到 form54-translate 这个仓库 → Import
+   （第一次会让你授权 GitHub，点同意就行）
+3. Framework Preset 选 **Other**
+4. Root Directory 不要动
+5. Deploy
+
+等一分钟，出来 https://form54-translate-xxx.vercel.app
+
+
+========================================
+第四步：测
+========================================
+
+地址后面加 /api/health：
+
+    https://form54-translate-xxx.vercel.app/api/health
+
+看到 {"ready":true,"ai":true,...} 就成了。
+
+
+========================================
+关于环境变量
+========================================
+
+对，环境变量是在 **Vercel** 上设，不是在 GitHub。
+GitHub 只是存代码，Vercel 才是真正跑起来的地方。
+
+但是——**你现在不用设**。
+Key 已经写在 lib/prompt.js 第 2 行了，部署完直接能用。
+
+什么时候需要设？
+只有你想换 Key、又不想改代码的时候：
+Vercel → 你的项目 → Settings → Environment Variables
+加一个 FM_KEY = 新Key，然后 Redeploy。
+
+注意：设了环境变量会**覆盖**代码里的那个 Key。
+
+
+========================================
+为什么建议 Private 仓库
+========================================
+
+lib/prompt.js 里写着你的 FreeModel Key。
+仓库如果是 Public，这个 Key 就公开了，谁都能拿去用，
+把你的额度烧光——表格本身不会坏，但 AI 会开始报错。
+
+选 Private 就没这个问题，Vercel 免费版也支持私有仓库。
